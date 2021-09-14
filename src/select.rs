@@ -9,8 +9,13 @@ use nanorand::Rng;
 // A unique token corresponding to an event in a selector
 type Token = usize;
 
+#[cfg(not(target_env = "sgx"))]
+type Thread = thread::Thread;
+#[cfg(all(target_env = "sgx"))]
+type Thread = thread::SgxThread;
+
 struct SelectSignal(
-    thread::Thread,
+    Thread,
     Token,
     AtomicBool,
     Arc<Spinlock<VecDeque<Token>>>,
